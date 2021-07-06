@@ -12,18 +12,22 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_configure(REQUIRES catch2/2.13.6 GENERATORS cmake_find_package)
+conan_cmake_configure(REQUIRES tgbot/1.2.1 GENERATORS cmake_find_package)
 conan_cmake_autodetect(settings)
 conan_cmake_install(PATH_OR_REFERENCE . BUILD missing REMOTE conan-center SETTINGS ${settings})
 find_package(Catch2)
+find_package(tgbot)
 
 file(GLOB proj_sources src/*.cpp)
 add_executable(app ${proj_sources})
+target_link_libraries(app PRIVATE tgbot::tgbot)
 
 #[[Changing the entry point for tests]]
 list(FILTER proj_sources EXCLUDE REGEX ".*Main.cpp$")
 file(GLOB test_sources test/*.cpp)
 add_executable(test ${proj_sources} ${test_sources})
 target_link_libraries(test PRIVATE Catch2::Catch2)
+target_link_libraries(test PRIVATE tgbot::tgbot)
 
 
 
