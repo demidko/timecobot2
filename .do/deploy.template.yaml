@@ -1,0 +1,13 @@
+spec:
+  name: timecobot2
+  workers:
+    - name: backend
+      dockerfile_path: Dockerfile
+      github:
+        repo: demidko/timecobot2
+        branch: main
+        deploy_on_push: true
+      envs:
+        - key: TOKEN
+          type: SECRET
+          scope: RUN_TIME
