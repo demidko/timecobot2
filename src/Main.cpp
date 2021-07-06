@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
       return checkFaqOrStatus(api, *m);
     }
     if (!m->replyToMessage->from) {
-      return;
+      return checkPin(api, *m);
     }
     checkBanOrUnbanOrTransferOrPin(api, *m);
   });
