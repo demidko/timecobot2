@@ -3,33 +3,34 @@ project(timecobot2)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 add_definitions("-std=c++20")
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
     message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
     file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
             "${CMAKE_BINARY_DIR}/conan.cmake"
             EXPECTED_HASH SHA256=396e16d0f5eabdc6a14afddbcfff62a54a7ee75c6da23f32f7a31bc85db23484
             TLS_VERIFY ON)
-endif()
+endif ()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_configure(REQUIRES catch2/2.13.6 GENERATORS cmake_find_package)
 conan_cmake_configure(REQUIRES tgbot/1.2.1 GENERATORS cmake_find_package)
 conan_cmake_configure(REQUIRES fmt/6.1.2 GENERATORS cmake_find_package)
 conan_cmake_autodetect(settings)
 conan_cmake_install(PATH_OR_REFERENCE . BUILD missing REMOTE conan-center SETTINGS ${settings})
-find_package(tgbot REQUIRED)
-find_package(Catch2 REQUIRED)
+
+find_package(tgbot)
+find_package(Catch2)
 find_package(fmt)
 
 file(GLOB proj_sources src/*.cpp)
 add_executable(app ${proj_sources})
-target_link_libraries(app PRIVATE tgbot::tgbot)
-target_link_libraries(app PRIVATE fmt::fmt)
+target_link_libraries(app tgbot::tgbot)
+target_link_libraries(app fmt::fmt)
 
 #[[Changing the entry point for tests]]
 list(FILTER proj_sources EXCLUDE REGEX ".*Main.cpp$")
 file(GLOB test_sources test/*.cpp)
 add_executable(test ${proj_sources} ${test_sources})
-target_link_libraries(test CONFIG Catch2::Catch2)
+target_link_libraries(test Catch2::Catch2)
 
 
 
