@@ -6,7 +6,12 @@
 int main(int argc, char **argv) {
   auto bot = TgBot::Bot(getenv("TOKEN"));
   bot.getEvents().onAnyMessage([api = bot.getApi()](const TgBot::Message::Ptr &m) {
-    fmt::print("chat: {}, from: {}\n", m->chat->id, m->from->id);
+
+    if (!m->replyToMessage) {
+      return;
+    }
+
+    fmt::print("is null: {} is bool: {}\n", m->replyToMessage == nullptr, bool(m->replyToMessage));
 
     //api.sendMessage(m->chat->id, "It works", false, m->replyToMessage->from->id);
   });
