@@ -3,5 +3,5 @@
 #include <catch2/catch.hpp>
 
 TEST_CASE("Test") {
-  REQUIRE(2 + 2 == 4);
+  REQUIRE(2 + 2 == 5);
 }
