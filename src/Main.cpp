@@ -3,17 +3,44 @@
 #include <fmt/core.h>
 #include <fmt/color.h>
 
+/**
+ * faq or status
+ * @param m message without reply to another message
+ */
+void checkFaqOrStatus(const TgBot::Api &api, const TgBot::Message &m) {
+
+}
+
+/**
+ *
+ * @param api
+ * @param m message with reply to another message
+ */
+void checkPin(const TgBot::Api &api, const TgBot::Message &m) {
+
+}
+
+/**
+ * transfer, ban, unban
+ * @param m message with reply to another user
+ */
+void checkBanOrUnbanOrTransferOrPin(const TgBot::Api &api, const TgBot::Message &m) {
+
+}
+
 int main(int argc, char **argv) {
   auto bot = TgBot::Bot(getenv("TOKEN"));
   bot.getEvents().onAnyMessage([api = bot.getApi()](const TgBot::Message::Ptr &m) {
-
-    if (!m->replyToMessage) {
+    if (m->text.empty()) {
       return;
     }
-
-    fmt::print("is null: {} is bool: {}\n", m->replyToMessage == nullptr, bool(m->replyToMessage));
-
-    //api.sendMessage(m->chat->id, "It works", false, m->replyToMessage->from->id);
+    if (!m->replyToMessage) {
+      return checkFaqOrStatus(api, *m);
+    }
+    if (!m->replyToMessage->from) {
+      return;
+    }
+    checkBanOrUnbanOrTransferOrPin(api, *m);
   });
 
 
