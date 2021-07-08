@@ -9,6 +9,16 @@ To start using the system, just add [`@timecobot`](https://t.me/timecobot) to th
 understands spoken language (english and russian). You can see [examples there](https://habr.com/ru/post/556474/).
 Experiment!
 
+## Features
+
+1. faq
+1. time account
+1. ban [to, duration]
+1. unban [to, duration]
+1. transfer [to, duration]
+1. pin [message, duration]
+1. clearing self messages [duration]
+
 ## Build
 
 We need [`CMake`](https://cmake.org/download) build system and [`Conan`](https://conan.io) manager libraries.

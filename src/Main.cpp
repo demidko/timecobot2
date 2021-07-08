@@ -1,13 +1,11 @@
-#include <iostream>
 #include <tgbot/tgbot.h>
-#include <fmt/core.h>
-#include <fmt/color.h>
+#include "Command.h"
 
 /**
- * faq or status
+ * faq or status or cleaning
  * @param m message without reply to another message
  */
-void checkFaqOrStatus(const TgBot::Api &api, const TgBot::Message &m) {
+void checkSelfFeatures(const TgBot::Api &api, const TgBot::Message &m) {
 
 }
 
@@ -16,36 +14,36 @@ void checkFaqOrStatus(const TgBot::Api &api, const TgBot::Message &m) {
  * @param api
  * @param m message with reply to another message
  */
-void checkPin(const TgBot::Api &api, const TgBot::Message &m) {
+void checkPinFeature(const TgBot::Api &api, const TgBot::Message &m) {
+  if (auto maybePin = Command(m.text); maybePin.isPin()) {
 
+  }
 }
 
 /**
  * transfer, ban, unban
  * @param m message with reply to another user
  */
-void checkBanOrUnbanOrTransferOrPin(const TgBot::Api &api, const TgBot::Message &m) {
+void checkInteractiveFeatures(const TgBot::Api &api, const TgBot::Message &m) {
 
 }
 
 int main(int argc, char **argv) {
   auto bot = TgBot::Bot(getenv("TOKEN"));
+
   bot.getEvents().onAnyMessage([api = bot.getApi()](const TgBot::Message::Ptr &m) {
-    if (m->text.empty()) {
+    if (!m->from || m->text.empty()) {
       return;
     }
     if (!m->replyToMessage) {
-      return checkFaqOrStatus(api, *m);
+      return checkSelfFeatures(api, *m);
     }
     if (!m->replyToMessage->from) {
-      return checkPin(api, *m);
+      return checkPinFeature(api, *m);
     }
-    checkBanOrUnbanOrTransferOrPin(api, *m);
+    checkInteractiveFeatures(api, *m);
   });
-
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
-  for (auto longPoll = TgBot::TgLongPoll(bot);;) longPoll.start();
-#pragma clang diagnostic pop
+  for (auto poll = TgBot::TgLongPoll(bot);;) {
+    poll.start();
+  }
 }
