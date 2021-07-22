@@ -195,7 +195,7 @@ bool Command::isFaq() const {
     "help",
     "rule",
     "faq",
-    "start",
+    "onUpdateAction",
     "старт"
   );
 }

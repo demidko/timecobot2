@@ -5,19 +5,19 @@ discriminatory rules, administrators and moderators. Bot also can be used to pin
 
 ## Usage
 
-To start using the system, just add [`@timecobot`](https://t.me/timecobot) to the group with admin rights. Bot
+To onUpdateAction using the system, just add [`@timecobot`](https://t.me/timecobot) to the group with admin rights. Bot
 understands spoken language (english and russian). You can see [examples there](https://habr.com/ru/post/556474/).
 Experiment!
 
 ## Features
 
-1. faq
-1. time account
-1. ban [to, duration]
-1. unban [to, duration]
-1. transfer [to, duration]
-1. pin [message, duration]
-1. clearing self messages [duration]
+- [ ] faq
+- [ ] timecoins
+- [ ] ban [to, duration]
+- [ ] unban [to, duration]
+- [ ] the ability to ban and unblock admins 
+- [ ] transfer [to, duration]
+- [ ] pin [message, duration]
 
 ## Build
 
