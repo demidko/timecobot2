@@ -9,5 +9,3 @@ TEST_CASE("Command test") {
   REQUIRE(command.isBan());
   REQUIRE(command.getDurationSec() == 60 * 60 * 24 * 7 * 3);
 }
-
-

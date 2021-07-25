@@ -196,7 +196,19 @@ bool Bot::unmute(ChatId chatId, UserId userId) {
   return result.text == "True";
 }
 
-bool Bot::pin(ChatId, MessageId, time_t) const {
-
-  return false;
+bool Bot::pin(ChatId chatId, MessageId messageId, time_t untilSec) {
+  {
+    std::lock_guard guard{pinnedMessagesMutex};
+    auto chatDb = pinnedMessages[chatId];
+    if (auto it = chatDb.find(messageId); it == chatDb.cend()) {
+      chatDb[messageId] = untilSec;
+    } else {
+      it->second = untilSec + (untilSec - it->second);
+    }
+  }
+  auto result = api("pinChatMessage", {
+    {"chat_id", std::to_string(chatId)},
+    {"message_id", std::to_string(messageId)},
+  });
+  return result.text == "True";
 }

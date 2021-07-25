@@ -83,9 +83,9 @@ public:
 
   void pinAllMessages(const std::unordered_map<ChatId, std::unordered_map<MessageId, time_t>> &);
 
-  bool pin(ChatId, MessageId, time_t) const;
+  bool pin(ChatId, MessageId, time_t);
 
-  bool unpin(ChatId, MessageId) const;
+  bool unpin(ChatId, MessageId);
 
   bool unmute(ChatId, UserId);
 
