@@ -75,15 +75,6 @@ bool Telegram::Bot::handleMessage(simdjson::simdjson_result<simdjson::ondemand::
   for (;; handleUpdates());
 }
 
-Telegram::Bot &Telegram::Bot::onFile(Telegram::FileHandler h) {
-  fileHandler = move(h);
-  return *this;
-}
-
-Telegram::Bot &Telegram::Bot::onRequest(Telegram::RequestHandler h) {
-  requestHandler = move(h);
-  return *this;
-}
 
 void Telegram::Bot::reply(int64_t chat, int64_t originalMessage, std::string_view reply) const {
   cpr::Get(

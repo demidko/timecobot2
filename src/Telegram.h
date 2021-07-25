@@ -28,6 +28,10 @@ namespace Telegram {
 
   using ChatInteractionHandler = std::function<void(const Bot &, const ChatInteraction &)>;
 
+  struct FileUploaded {
+
+  };
+
   class Bot {
     const cpr::Url url;
     ChatActionHandler chatActionHandler;
@@ -50,7 +54,7 @@ namespace Telegram {
 
   public:
 
-    explicit Bot(std::string_view);
+    explicit Bot(std::string_view, std::string_view);
 
     Bot &onChatAction(ChatActionHandler);
 
