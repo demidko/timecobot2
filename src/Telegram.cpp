@@ -24,6 +24,7 @@ const auto MUTED_PERMISSIONS = R"(
 Bot::Bot(std::string_view t) : url{"https://api.telegram.org/bot"s + t.data() + "/"} {}
 
 void Bot::parseUpdates() {
+  // todo periodically unpin deprecated messages
   auto updates = api("getUpdates", {
     {"timeout", "10"},
     {"allowed_updates", R"(["message","channel_post"])"},
@@ -55,6 +56,15 @@ bool Bot::parseMessage(simdjson::simdjson_result<simdjson::ondemand::value> cont
   if (chatId.error()) {
     return false;
   }
+  auto messageId = container["message_id"].get_int64();
+  auto senderId = container["from"]["id"].get_int64();
+
+  if(messageId.error() || senderId.error()) {
+    return false;
+  }
+
+  // todo delete muted messages
+
   auto fileId = container["document"]["file_id"].get_string();
   if (chatFileHandler && !fileId.error()) {
     threadPool.enqueue(
@@ -69,9 +79,8 @@ bool Bot::parseMessage(simdjson::simdjson_result<simdjson::ondemand::value> cont
       });
     return true;
   }
-  auto senderId = container["from"]["id"].get_int64();
   auto text = container["text"].get_string();
-  if (senderId.error() || text.error()) {
+  if (text.error()) {
     return false;
   }
   auto recipientId = container["reply_to_message"]["from"]["id"].get_int64();
@@ -93,8 +102,7 @@ bool Bot::parseMessage(simdjson::simdjson_result<simdjson::ondemand::value> cont
     );
     return true;
   }
-  auto messageId = container["message_id"].get_int64();
-  if (chatActionHandler && !messageId.error()) {
+  if (chatActionHandler) {
     threadPool.enqueue(
       [
         this,
