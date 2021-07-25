@@ -1,67 +1,96 @@
 #pragma once
-
 #include <functional>
 #include <string_view>
 #include <cpr/cpr.h>
 #include <simdjson.h>
 #include <ThreadPool/ThreadPool.h>
-#include <variant>
+#include <unordered_map>
+#include <mutex>
 
 namespace Telegram {
 
-  class Bot;
+using ChatId = int64_t;
 
-  struct ChatAction {
-    int64_t chatId;
-    int64_t sender;
-    int64_t senderMessage;
-  };
+using UserId = int64_t;
 
-  using ChatActionHandler = std::function<void(const Bot &, const ChatAction &)>;
+using MessageId = int64_t;
 
-  struct ChatInteraction {
-    int64_t chatId;
-    int64_t sender;
-    int64_t recipient;
-    int64_t recipientMessage;
-  };
+class Bot;
 
-  using ChatInteractionHandler = std::function<void(const Bot &, const ChatInteraction &)>;
+struct ChatAction {
+  ChatId chatId;
+  UserId senderId;
+  std::string text;
+  UserId messageId;
+};
 
-  struct FileUploaded {
+using ChatActionHandler = std::function<void(Bot &, const ChatAction &)>;
 
-  };
+struct ChatInteraction {
+  ChatId chatId;
+  UserId senderId;
+  std::string text;
+  UserId recipientId;
+  MessageId recipientMessageId;
+};
 
-  class Bot {
-    const cpr::Url url;
-    ChatActionHandler chatActionHandler;
-    ChatInteractionHandler chatInteractionHandler;
-    simdjson::ondemand::parser parser;
-    const cpr::Url getUpdates = url + "getUpdates";
-    const cpr::Url sendMessage = url + "sendMessage";
-    const cpr::Parameter timeout{"timeout", "10"};
-    const cpr::Parameter allowedUpdates{"allowed_updates", R"(["message","channel_post"])"};
-    const std::string messageTypes[2]{"message", "channel_post"};
-    int64_t offset{};
-    ThreadPool pool{4};
-    const cpr::VerifySsl ssl{false};
+using ChatInteractionHandler = std::function<void(Bot &, const ChatInteraction &)>;
 
-    bool handleMessage(simdjson::simdjson_result<simdjson::ondemand::value> container);
+struct ChatFile {
+  ChatId chatId;
+  std::string fileId;
+};
 
-    void handleUpdates();
+using ChatFileHandler = std::function<void(const Bot &, const ChatFile &)>;
 
-    cpr::Response request(std::string_view, const cpr::Parameters&);
+class Bot {
+  const cpr::Url url;
+  ChatActionHandler chatActionHandler;
+  ChatInteractionHandler chatInteractionHandler;
+  ChatFileHandler chatFileHandler;
+  simdjson::ondemand::parser updatesParser;
+  int64_t updatesOffset{};
+  ThreadPool threadPool{4};
+  std::unordered_map<ChatId, std::unordered_map<UserId, time_t>> mutedAdmins;
+  std::mutex mutedAdminsMutex;
+  std::unordered_map<ChatId, std::unordered_map<MessageId, time_t>> pinnedMessages;
+  std::mutex pinnedMessagesMutex;
 
-  public:
+  bool parseMessage(simdjson::simdjson_result<simdjson::ondemand::value>);
 
-    explicit Bot(std::string_view, std::string_view);
+  void parseUpdates();
 
-    Bot &onChatAction(ChatActionHandler);
+  [[nodiscard]] cpr::Response api(std::string_view method, const cpr::Parameters &p) const;
 
-    Bot &onChatInteraction(ChatInteractionHandler);
+public:
+  explicit Bot(std::string_view);
 
-    [[noreturn]] void run();
+  Bot &onChatAction(ChatActionHandler);
 
-    void reply(int64_t chat, int64_t originalMessage, std::string_view reply) const;
-  };
+  Bot &OnChatFile(ChatFileHandler);
+
+  Bot &onChatInteraction(ChatInteractionHandler);
+
+  [[noreturn]] void run();
+
+  [[nodiscard]]
+  std::unordered_map<ChatId, std::unordered_map<UserId, time_t>> getMutedAdmins() const;
+
+  void muteAllAdmins(const std::unordered_map<ChatId, std::unordered_map<UserId, time_t>> &);
+
+  [[nodiscard]]
+  std::unordered_map<ChatId, std::unordered_map<MessageId, time_t>> getPinnedMessages() const;
+
+  void pinAllMessages(const std::unordered_map<ChatId, std::unordered_map<MessageId, time_t>> &);
+
+  bool pin(ChatId, MessageId, time_t) const;
+
+  bool unpin(ChatId, MessageId) const;
+
+  bool unmute(ChatId, UserId);
+
+  bool mute(ChatId, UserId, time_t);
+
+  void reply(ChatId, MessageId, std::string_view) const;
+};
 }

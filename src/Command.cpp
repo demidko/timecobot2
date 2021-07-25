@@ -8,18 +8,18 @@ using namespace std;
 
 namespace {
 
-  constexpr uint8_t MINUTE_SECONDS = 60;
-  constexpr uint16_t HOUR_SECONDS = MINUTE_SECONDS * 60;
-  constexpr uint32_t DAY_SECONDS = HOUR_SECONDS * 24;
-  constexpr uint32_t WEEK_SECONDS = DAY_SECONDS * 7;
-  constexpr uint32_t MONTH_SECONDS = DAY_SECONDS * 30;
-  constexpr uint32_t YEAR_SECONDS = DAY_SECONDS * 365;
-  constexpr uint8_t MIN_SECONDS = 30;
-  constexpr uint32_t MAX_SECONDS = DAY_SECONDS * 366;
+constexpr uint8_t MINUTE_SECONDS = 60;
+constexpr uint16_t HOUR_SECONDS = MINUTE_SECONDS * 60;
+constexpr uint32_t DAY_SECONDS = HOUR_SECONDS * 24;
+constexpr uint32_t WEEK_SECONDS = DAY_SECONDS * 7;
+constexpr uint32_t MONTH_SECONDS = DAY_SECONDS * 30;
+constexpr uint32_t YEAR_SECONDS = DAY_SECONDS * 365;
+constexpr uint8_t MIN_SECONDS = 30;
+constexpr uint32_t MAX_SECONDS = DAY_SECONDS * 366;
 
-  UnicodeString toLowerTrimmed(string_view text) {
-    return UnicodeString(text.data()).trim().toLower();
-  }
+UnicodeString toLowerTrimmed(string_view text) {
+  return UnicodeString(text.data()).trim().toLower();
+}
 }
 
 Command::Command(string_view data) : text(toLowerTrimmed(data)) {}
@@ -75,7 +75,7 @@ uint32_t Command::getTimeUnitSec() const {
   }
   if (containsStems("day", "суток", "сутк",
                     "дня", "ден", "дне") ||
-      containsWords("d", "д")) {
+    containsWords("d", "д")) {
     return DAY_SECONDS;
   }
   if (containsStems("week", "недел")) {
@@ -85,7 +85,7 @@ uint32_t Command::getTimeUnitSec() const {
     return MONTH_SECONDS;
   }
   if (containsStems("year", "год", "лет") ||
-      containsWords("y", "yr", "г", "л")) {
+    containsWords("y", "yr", "г", "л")) {
     return YEAR_SECONDS;
   }
   return MINUTE_SECONDS;
@@ -159,32 +159,32 @@ bool Command::isUnban() const {
 bool Command::isTransfer() const {
   return
     startsWithWords("дать") ||
-    startsWithStems(
-      "transfer",
-      "give",
-      "take",
-      "get",
-      "keep",
-      "держи",
-      "бери",
-      "возьми",
-      "трансфер",
-      "перевод",
-      "дар",
-      "подар",
-      "взял",
-      "забер",
-      "забир",
-      "перевед",
-      "перевест",
-      "отправ",
-      "send");
+      startsWithStems(
+        "transfer",
+        "give",
+        "take",
+        "get",
+        "keep",
+        "держи",
+        "бери",
+        "возьми",
+        "трансфер",
+        "перевод",
+        "дар",
+        "подар",
+        "взял",
+        "забер",
+        "забир",
+        "перевед",
+        "перевест",
+        "отправ",
+        "send");
 }
 
 bool Command::isPin() const {
   return
     startsWithWords("пин") ||
-    startsWithStems("закреп", "pin", "запин");
+      startsWithStems("закреп", "pin", "запин");
 }
 
 bool Command::isFaq() const {

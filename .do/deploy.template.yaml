@@ -11,3 +11,6 @@ spec:
         - key: TOKEN
           type: SECRET
           scope: RUN_TIME
+        - key: BACKUP
+          type: SECRET
+          scope: RUN_TIME
